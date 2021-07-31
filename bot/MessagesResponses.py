@@ -1,0 +1,220 @@
+import collections
+import random
+from types import SimpleNamespace
+import aiohttp
+import wikipediaapi
+from bs4 import BeautifulSoup
+from . import Database
+from .Utils import get_formatted_query_string, fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
+    get_similarity_avg_of_phrases
+from .ErrorHandler import EmptyResponse
+
+headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5', 'User-Agent': 'Chrome/80.0'}
+steamCookies = {
+    'wants_mature_content': '1',
+    'birthtime': '189302401',
+    'lastagecheckage': '1-January-2020',
+}
+
+
+def function_switcher(message):
+    text = message.content.strip()
+    return simple_talk(text)
+
+
+def wiki_search(text):
+    wikipedia = wikipediaapi.Wikipedia('es')
+    wikipedia_page = wikipedia.page(text)
+
+    if wikipedia_page.exists():
+        title = wikipedia_page.title
+        summary = wikipedia_page.summary[0:1000]
+
+        summary_continuation: str
+
+        if not (summary.endswith('.')):
+            summary_continuation = wikipedia_page.summary[1000:2000]
+            summary_continuation = summary_continuation.split('.', 1)[0]
+            summary = summary + summary_continuation + "."
+        return "Te cuento lo que se sobre " + title + ": " + "\n" + summary
+    else:
+        return "Boludeces no me preguntes"
+
+
+def genius(text):
+    if text.endswith('?'):
+        index = random.choice(range(0, len(Database.fastAnswerList)))
+        return Database.fastAnswerList[index]
+    else:
+        return 'Eso no es una pregunta boludo'
+
+
+def choose(text):
+    options = text.split(',')
+    if len(options) > 1:
+        return random.choice(options).strip()
+    else:
+        return "No pusiste varias opciones salchichon"
+
+
+def simple_talk(text):
+    return Database.simpleTalkDictionary.get(text)
+
+
+async def steam_chart(game_name):
+    fixed_name = steam_search(game_name)[0]
+    query = fixed_name.replace(' ', '+').replace('&', '%26')
+    query = get_formatted_query_string(query)
+    url = 'https://steamcharts.com/search/?q=' + query
+
+    async with aiohttp.ClientSession(headers=headers) as session:
+        response = await fetch(session, url)
+
+    soup = BeautifulSoup(response, 'html.parser')
+
+    def get_formatted_name(_game_row):
+        name = get_name(_game_row)
+        return get_formatted_query_string(name) if name else None
+
+    def get_name(_game_row):
+        name_row = _game_row.find('td', class_='left')
+        return name_row.text.strip() if name_row else None
+
+    try:
+        game_rows = soup.findAll('tr')
+        for gameRow in game_rows:
+
+            if gameRow and get_formatted_name(gameRow) == get_formatted_query_string(fixed_name):
+                current_players = gameRow.find('td', class_='right num').string.strip()
+
+                month_avg = gameRow.find('td', class_='right num-f').string.strip()
+
+                return 'Encontrado: {}\nActualmente jugando: {}\nPromedio mensual: {}'.format(get_name(gameRow),
+                                                                                              current_players, month_avg)
+        else:
+            raise IndexError
+    except IndexError:
+        return 'No se encontro el juego en steamcharts'
+
+
+def steam_search(game_name):
+    first_char = game_name[0]
+    list_with_starter_char = Database.indexedGamesDict[first_char.lower()] + Database.indexedGamesDict[first_char.upper()]
+    match = max(list_with_starter_char, key=lambda x: get_similarity_avg_of_phrases(x[0], game_name))
+    return match
+
+
+async def search_info_from_steam(game_name):
+    appid = steam_search(game_name)[1]
+    steam_url = 'https://store.steampowered.com/app/' + str(appid)
+
+    async with aiohttp.ClientSession(headers=headers, cookies=steamCookies) as session:
+        response = await fetch(session, steam_url)
+
+    soup = BeautifulSoup(response, 'html.parser')
+
+    Item = collections.namedtuple('Item', 'prefix content')
+    items: list = list()
+
+    name = soup.find('div', class_='apphub_AppName')
+    if not name:
+        raise EmptyResponse('No tengo acceso a la pagina de ese juego')
+    items.append(Item(prefix='Nombre: ', content=name))
+
+    div_first_product = soup.find('div', 'game_area_purchase_game_wrapper')
+    if div_first_product:
+        div_price = div_first_product.find('div', class_='game_purchase_action_bg')
+    else:
+        div_price = soup.find('div', class_='game_purchase_action_bg')
+
+    try:
+        price = div_price.find('div', class_='game_purchase_price price')
+        discount_price = div_price.find('div', class_='discount_final_price')
+        percentage_discount = div_price.find('div', class_='discount_pct')
+        if discount_price:
+            content = SimpleNamespace(propertyName='string')
+            content.string = '({}) {}'.format(percentage_discount.string, discount_price.string)
+        else:
+            content = price
+        items.append(Item(prefix='Precio: ', content=content))
+    except AttributeError:
+        pass
+
+    percentages = soup.find_all('div', class_='user_reviews_summary_row')
+
+    try:
+        recent_reviews = soup.find('div', class_='subtitle column')
+        recent_reviews = recent_reviews.find_next_sibling().find('span')
+        if recent_reviews:
+            percentage = split_with_delimiter(percentages[0].attrs.get('data-tooltip-html'), '%')
+            add_percentage(recent_reviews, percentage)
+            items.append(Item(prefix='Reviews recientes: ', content=recent_reviews))
+    except AttributeError:
+        pass
+
+    try:
+        total_reviews = soup.find('div', class_='subtitle column all')
+        total_reviews = total_reviews.find_next_sibling().find('span')
+        if total_reviews:
+            index = 1 if len(percentages) > 2 else 0
+            percentage = split_with_delimiter(percentages[index].attrs.get('data-tooltip-html'), '%')
+            add_percentage(total_reviews, percentage)
+            items.append(Item(prefix='Reviews generales: ', content=total_reviews))
+    except AttributeError:
+        pass
+
+    try:
+        realese_date = soup.find('div', class_='date')
+        items.append(Item(prefix='Fecha de lanzamiento: ', content=realese_date))
+    except AttributeError:
+        pass
+
+    try:
+        all_languages = soup.find_all('td', class_='ellipsis')
+        with_interface_supported = list(filter(lambda x: x.find_next_sibling().find('span'), all_languages))
+        if len(with_interface_supported) > 5:
+            with_interface_supported = with_interface_supported[:5]
+            temp = SimpleNamespace(propertyName='string')
+            temp.string = '...'
+            with_interface_supported.append(temp)
+        with_interface_supported = generate_string_from_collection(with_interface_supported, ', ')
+        languages = SimpleNamespace(propertyName='string')
+        languages.string = with_interface_supported
+        items.append(Item(prefix='Idiomas de interfaz disponibles: ', content=languages))
+    except AttributeError:
+        pass
+
+    try:
+        div = soup.find('div', class_='game_area_sys_req_full')
+        if not div:
+            div = soup.find('div', class_='game_area_sys_req_leftCol')
+
+        ul = div.find('ul')
+        all_requeriments = ul.find('ul').find_all('li')
+        requeriments_string: str = ''
+
+        for requeriment in all_requeriments:
+            try:
+                element = requeriment.find('strong')
+                typo = element.string
+                detail = element.next_sibling
+                requeriments_string += '{} {}\n'.format(typo, detail)
+            except AttributeError:
+                pass
+
+        requeriments = SimpleNamespace(propertyName='string')
+        requeriments.string = requeriments_string
+        items.append(Item(prefix='\nRequisitos minimos:\n', content=requeriments))
+
+    except AttributeError:
+        pass
+
+    items = list(filter(lambda x: x and x.content, items))
+    message = '\n'.join(map(lambda x: x.prefix + x.content.string.strip(), items))
+
+    is_early_access = soup.find('div', class_='early_access_header')
+
+    if is_early_access:
+        message += '\n\n¡El juego esta en early access!, investigalo bien papito'
+
+    return message

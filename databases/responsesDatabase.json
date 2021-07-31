@@ -1,0 +1,31 @@
+{
+  "genius": {
+    "fastAnswer": [
+      "No",
+      "Claramente",
+      "Si",
+      "De ninguna manera",
+      "\u266B Si te agarro con otro te mato \u266B ... estoy cantando, ahora no puedo",
+      "En todos los sentidos",
+      "Nope",
+      "Si lo pones en esas palabras... si",
+      "Mi amor traeme la escopeta que lo saco a los tiros al boludo este"
+    ]
+  },
+  "simpleTalk": {
+    "hola pocho": "Hola querido, Como estas?",
+    "bien": "Me alegro mucho de que estes bien",
+    "mal": "Si estas mal, votame para presidente 2024",
+    "pocho, que vas a hacer si sos presidente?": "Voy a crear un plan de alimentacion para los patos en los lagos",
+    "pocho sale un men?": "Hasta que Mauro no tome medio no juego",
+    "pocho jugamos con franquito?": "Que vua jugar con ese, abre el launcher de un juego y la PC tira mas fuego que Notre Dame",
+    "espejito espejito quien es el mas bigote?" : "Manfred, sin lugar a dudas",
+    "cantate algo pocho" : "\u266B Si te agarro con otro te mato \u266B"
+  },
+  "radios": {
+    "rock" : "http://stream.radioparadise.com/rock-128",
+    "electroswing" : "https://electro-swing.stream.laut.fm/electro-swing?ref=radiode&t302=2020-07-19_22-32-29&uuid=41b85c15-81f4-4cf0-a0e3-913c1d0768a4",
+    "variado" : "https://media-ssl.musicradio.com/SmoothUK?dax_version=release_1598&dax_player=GlobalPlayer&dax_platform=Web&dax_listenerid=1595190737149_0.7478646370706761&aisDelivery=streaming&listenerid=1595190737149_0.5117011653435263&aw_0_1st.playerid=GlobalPlayer&aw_0_1st.skey=1595190737&aw_0_req.userConsent=",
+    "jazz" : "https://jazzblues.ice.infomaniak.ch/jazzblues-high"
+  }
+}
