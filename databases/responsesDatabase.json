@@ -1,15 +1,13 @@
 {
   "genius": {
     "fastAnswer": [
-      "No",
-      "Claramente",
       "Si",
-      "De ninguna manera",
-      "\u266B Si te agarro con otro te mato \u266B ... estoy cantando, ahora no puedo",
       "En todos los sentidos",
-      "Nope",
       "Si lo pones en esas palabras... si",
-      "Mi amor traeme la escopeta que lo saco a los tiros al boludo este"
+      "No",
+      "De ninguna manera",
+      "Nope",
+      "¿Que es esa pregunta?"
     ]
   },
   "simpleTalk": {
@@ -19,8 +17,6 @@
     "pocho, que vas a hacer si sos presidente?": "Voy a crear un plan de alimentacion para los patos en los lagos",
     "pocho sale un men?": "Hasta que Mauro no tome medio no juego",
     "pocho jugamos con franquito?": "Que vua jugar con ese, abre el launcher de un juego y la PC tira mas fuego que Notre Dame",
-    "espejito espejito quien es el mas bigote?" : "Manfred, sin lugar a dudas",
-    "cantate algo pocho" : "\u266B Si te agarro con otro te mato \u266B"
   },
   "radios": {
     "rock" : "http://stream.radioparadise.com/rock-128",

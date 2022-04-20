@@ -1,6 +1,6 @@
 requests>=2.24.0
 discord==1.7.3
-aiohttp>=3.7.4
+aiohttp==3.6.0
 beautifulsoup4>=4.9.1
 PyNaCl==1.4.0
 youtube_dl
