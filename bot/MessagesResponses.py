@@ -1,3 +1,5 @@
+from .Utils import fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
+    get_similarity_avg_of_phrases
 import collections
 import random
 from types import SimpleNamespace
@@ -5,9 +7,8 @@ import aiohttp
 import wikipediaapi
 from bs4 import BeautifulSoup
 from . import Database
-from .Utils import get_formatted_query_string, fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
-    get_similarity_avg_of_phrases
 from .ErrorHandler import EmptyResponse
+
 
 headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5', 'User-Agent': 'Chrome/80.0'}
 steamCookies = {
@@ -15,6 +16,12 @@ steamCookies = {
     'birthtime': '189302401',
     'lastagecheckage': '1-January-2020',
 }
+
+class message_with_image:
+
+    def __init__(self, message, embed_image_url):
+        self.message : str = message
+        self.embed_image_url : str = embed_image_url
 
 
 def function_switcher(message):
@@ -62,37 +69,30 @@ def simple_talk(text):
 
 
 async def steam_chart(game_name):
-    fixed_name = steam_search(game_name)[0]
-    query = fixed_name.replace(' ', '+').replace('&', '%26')
-    query = get_formatted_query_string(query)
-    url = 'https://steamcharts.com/search/?q=' + query
-
-    async with aiohttp.ClientSession(headers=headers) as session:
-        response = await fetch(session, url)
-
-    soup = BeautifulSoup(response, 'html.parser')
-
-    def get_formatted_name(_game_row):
-        name = get_name(_game_row)
-        return get_formatted_query_string(name) if name else None
-
-    def get_name(_game_row):
-        name_row = _game_row.find('td', class_='left')
-        return name_row.text.strip() if name_row else None
-
+    game = steam_search(game_name)
+    url_raw = 'https://steamcharts.com'
+    id = game[1]
+    url = f'{url_raw}/app/{id}'
     try:
-        game_rows = soup.findAll('tr')
-        for gameRow in game_rows:
+        
+        async with aiohttp.ClientSession(headers=headers) as session:
+            response = await fetch(session, url)
 
-            if gameRow and get_formatted_name(gameRow) == get_formatted_query_string(fixed_name):
-                current_players = gameRow.find('td', class_='right num').string.strip()
+        soup = BeautifulSoup(response, 'html.parser')
 
-                month_avg = gameRow.find('td', class_='right num-f').string.strip()
+        div = soup.find('div', id='app-heading')
+        
+        image_src = div.find_next('img').attrs.get('src')
+        image_url = f'{ url_raw + image_src }' 
 
-                return 'Encontrado: {}\nActualmente jugando: {}\nPromedio mensual: {}'.format(get_name(gameRow),
-                                                                                              current_players, month_avg)
-        else:
-            raise IndexError
+        current_playing = div.find_all('span', class_='num')[0].string
+
+        avg_players = soup.find('td', class_='right num-f italic').string
+
+        text = f'Juego: {game[0]}\nActualmente jugando: {current_playing}\nPromedio mensual: {avg_players}'
+        
+        return message_with_image(message=text, embed_image_url=image_url)  
+
     except IndexError:
         return 'No se encontro el juego en steamcharts'
 
