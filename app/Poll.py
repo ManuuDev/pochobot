@@ -27,7 +27,8 @@ class Poll:
         for counter, option in enumerate(list_of_options, start=1):
             string_of_options += '\n\t{}) {}'.format(counter, option)
 
-        self.response_content = 'Votacion iniciada: \nPregunta: {0}?\nOpciones: {1}'.format(question, string_of_options)
+        self.response_content = 'Votacion iniciada: \nPregunta: {0}?\nOpciones: {1}'.format(
+            question, string_of_options)
 
     def start_timer(self):
         self.timer.start()
@@ -58,7 +59,8 @@ async def startpoll(ctx, text):
             list_of_options = strip_strings_from_list(list_of_options)
         else:
             clean_poll()
-            raise PollError('Error en el formato, deberia ser: pregunta? opcion1, opcion2, opcion3, ...')
+            raise PollError(
+                'Error en el formato, deberia ser: pregunta? opcion1, opcion2, opcion3, ...')
 
         ammount_of_options = len(list_of_options)
         if 1 < ammount_of_options <= 9:
@@ -114,11 +116,14 @@ async def endpoll(ctx, timeout=False):
     response = ''
     for option in currentPoll.options_with_counter:
         option[1] = option[1] - 1
-        response += 'Opcion: {0} tiene: {1} votos\n'.format(option[0], option[1])
+        response += 'Opcion: {0} tiene: {1} votos\n'.format(
+            option[0], option[1])
 
-    winning_option = max(currentPoll.options_with_counter, key=lambda item: item[1])
+    winning_option = max(currentPoll.options_with_counter,
+                         key=lambda item: item[1])
 
-    tie = all(x[1] == winning_option[1] for x in currentPoll.options_with_counter)
+    tie = all(x[1] == winning_option[1]
+              for x in currentPoll.options_with_counter)
 
     if tie:
         response += '\nEmpate en el resultado'

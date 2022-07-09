@@ -50,7 +50,8 @@ async def play_from_youtube(ctx, url, bot):
     except CustomError as exception:
         raise exception
     except TimeoutError:
-        raise MultimediaError('Fijate si tengo permisos para entrar a ese canal')
+        raise MultimediaError(
+            'Fijate si tengo permisos para entrar a ese canal')
 
 
 async def play_audio(ctx, bot, url, multimedia=None):
@@ -61,9 +62,11 @@ async def play_audio(ctx, bot, url, multimedia=None):
     if player.is_playing():
         player.source = multimedia.audioSource
     else:
-        player.play(multimedia.audioSource, after=lambda _: play_next_multimedia(ctx, bot))
+        player.play(multimedia.audioSource,
+                    after=lambda _: play_next_multimedia(ctx, bot))
 
-    response = 'Reproduciendo: {}\nDuracion: {}'.format(multimedia.title, multimedia.duration)
+    response = 'Reproduciendo: {}\nDuracion: {}'.format(
+        multimedia.title, multimedia.duration)
 
     await send_response_with_quote_format(ctx, response)
 
@@ -97,12 +100,14 @@ async def queue_manager(ctx, url, bot):
 
     if multimedia.typo == 'playlist' and multimedia.tracks >= 1:
         create_playlist_to_queue_daemon(ctx, info, bot, full_list=True)
-        response = 'Playlist {0} \ncon {1} tracks agregada a la cola'.format(multimedia.title, multimedia.tracks)
+        response = 'Playlist {0} \ncon {1} tracks agregada a la cola'.format(
+            multimedia.title, multimedia.tracks)
 
     elif multimedia.typo == 'playlist':
         first_song_url = get_first_song_url(info)
         first_song_info = get_multimedia_metadata(first_song_url)
-        multimedia = multimedia_factory(ctx, url=first_song_url, info=first_song_info)
+        multimedia = multimedia_factory(
+            ctx, url=first_song_url, info=first_song_info)
         add_multimedia_to_queue(multimedia)
         response = 'Track agregado a la cola: {0}'.format(multimedia.title)
 
@@ -118,7 +123,8 @@ def create_playlist_to_queue_daemon(ctx, info, bot, full_list=False):
     queue = info.get('entries')
     if queue and len(queue) > 1:
         index = 0 if full_list else 1
-        threading.Thread(target=add_playlist_to_queue, args=(ctx, queue[index:], bot), daemon=True).start()
+        threading.Thread(target=add_playlist_to_queue, args=(
+            ctx, queue[index:], bot), daemon=True).start()
 
 
 def add_playlist_to_queue(ctx, queue, bot):
@@ -159,9 +165,11 @@ def play_next_multimedia(ctx, bot):
     global youtubeQueue
     if not is_empty(youtubeQueue):
         multimedia = youtubeQueue.pop(0)
-        asyncio.run_coroutine_threadsafe(play_audio(multimedia.ctx, bot, multimedia.url, multimedia), bot.loop)
+        asyncio.run_coroutine_threadsafe(play_audio(
+            multimedia.ctx, bot, multimedia.url, multimedia), bot.loop)
     else:
-        asyncio.run_coroutine_threadsafe(send_response_with_quote_format(ctx, 'La cola de musica esta vacia'), bot.loop)
+        asyncio.run_coroutine_threadsafe(send_response_with_quote_format(
+            ctx, 'La cola de musica esta vacia'), bot.loop)
 
 
 async def pause(ctx, bot):
@@ -236,13 +244,15 @@ async def get_voice_client(ctx, bot) -> VoiceClient:
 
     check_permissions(ctx, bot, channel)
 
-    player: VoiceClient = bot.voice_clients[0] if len(bot.voice_clients) > 0 else None
+    player: VoiceClient = bot.voice_clients[0] if len(
+        bot.voice_clients) > 0 else None
 
     if not player or not player.channel == channel:
         try:
             player = await channel.connect()
         except ClientException:
-            raise MultimediaError('Estoy en otro canal troesma, anda y tira un stop')
+            raise MultimediaError(
+                'Estoy en otro canal troesma, anda y tira un stop')
 
     return player
 

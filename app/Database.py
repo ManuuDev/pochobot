@@ -47,7 +47,8 @@ def init_steam_database():
             indexedGamesDict = json.loads(inputfile.read())
 
     else:
-        page = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0001/")
+        page = requests.get(
+            "http://api.steampowered.com/ISteamApps/GetAppList/v0001/")
         json_structure = json.loads(page.content)
         game_list = json_structure['applist']['apps']['app']
         indexedGamesDict = create_abc_for_db(game_list)

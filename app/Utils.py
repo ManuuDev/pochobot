@@ -31,7 +31,7 @@ def send_response_with_quote(ctx, response):
 
 def send_response_with_quote_format(ctx, message):
     return ctx.send('```{0}\n```'.format(message))
-    
+
 
 def send_response_with_specific_quote(ctx, response, quote):
     return ctx.send('>>> {0}\n{1}'.format(quote, response))
@@ -86,7 +86,8 @@ def get_views(video):
 
 
 def search_for_youtube_video(message=None, search=None):
-    search = message.content.strip().replace(' ', '+') if message else search.strip().replace(' ', '+')
+    search = message.content.strip().replace(
+        ' ', '+') if message else search.strip().replace(' ', '+')
     results = YoutubeSearch(search).to_dict()
 
     if results and len(results) > 0:

@@ -10,18 +10,20 @@ from . import Database
 from .ErrorHandler import EmptyResponse
 
 
-headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5', 'User-Agent': 'Chrome/80.0'}
+headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5',
+           'User-Agent': 'Chrome/80.0'}
 steamCookies = {
     'wants_mature_content': '1',
     'birthtime': '189302401',
     'lastagecheckage': '1-January-2020',
 }
 
+
 class message_with_image:
 
     def __init__(self, message, embed_image_url):
-        self.message : str = message
-        self.embed_image_url : str = embed_image_url
+        self.message: str = message
+        self.embed_image_url: str = embed_image_url
 
 
 def function_switcher(message):
@@ -74,24 +76,24 @@ async def steam_chart(game_name):
     id = game[1]
     url = f'{url_raw}/app/{id}'
     try:
-        
+
         async with aiohttp.ClientSession(headers=headers) as session:
             response = await fetch(session, url)
 
         soup = BeautifulSoup(response, 'html.parser')
 
         div = soup.find('div', id='app-heading')
-        
+
         image_src = div.find_next('img').attrs.get('src')
-        image_url = f'{ url_raw + image_src }' 
+        image_url = f'{ url_raw + image_src }'
 
         current_playing = div.find_all('span', class_='num')[0].string
 
         avg_players = soup.find('td', class_='right num-f italic').string
 
         text = f'Juego: {game[0]}\nActualmente jugando: {current_playing}\nPromedio mensual: {avg_players}'
-        
-        return message_with_image(message=text, embed_image_url=image_url)  
+
+        return message_with_image(message=text, embed_image_url=image_url)
 
     except IndexError:
         return 'No se encontro el juego en steamcharts'
@@ -99,8 +101,10 @@ async def steam_chart(game_name):
 
 def steam_search(game_name):
     first_char = game_name[0]
-    list_with_starter_char = Database.indexedGamesDict[first_char.lower()] + Database.indexedGamesDict[first_char.upper()]
-    match = max(list_with_starter_char, key=lambda x: get_similarity_avg_of_phrases(x[0], game_name))
+    list_with_starter_char = Database.indexedGamesDict[first_char.lower(
+    )] + Database.indexedGamesDict[first_char.upper()]
+    match = max(list_with_starter_char,
+                key=lambda x: get_similarity_avg_of_phrases(x[0], game_name))
     return match
 
 
@@ -123,7 +127,8 @@ async def search_info_from_steam(game_name):
 
     div_first_product = soup.find('div', 'game_area_purchase_game_wrapper')
     if div_first_product:
-        div_price = div_first_product.find('div', class_='game_purchase_action_bg')
+        div_price = div_first_product.find(
+            'div', class_='game_purchase_action_bg')
     else:
         div_price = soup.find('div', class_='game_purchase_action_bg')
 
@@ -133,7 +138,8 @@ async def search_info_from_steam(game_name):
         percentage_discount = div_price.find('div', class_='discount_pct')
         if discount_price:
             content = SimpleNamespace(propertyName='string')
-            content.string = '({}) {}'.format(percentage_discount.string, discount_price.string)
+            content.string = '({}) {}'.format(
+                percentage_discount.string, discount_price.string)
         else:
             content = price
         items.append(Item(prefix='Precio: ', content=content))
@@ -146,9 +152,11 @@ async def search_info_from_steam(game_name):
         recent_reviews = soup.find('div', class_='subtitle column')
         recent_reviews = recent_reviews.find_next_sibling().find('span')
         if recent_reviews:
-            percentage = split_with_delimiter(percentages[0].attrs.get('data-tooltip-html'), '%')
+            percentage = split_with_delimiter(
+                percentages[0].attrs.get('data-tooltip-html'), '%')
             add_percentage(recent_reviews, percentage)
-            items.append(Item(prefix='Reviews recientes: ', content=recent_reviews))
+            items.append(
+                Item(prefix='Reviews recientes: ', content=recent_reviews))
     except AttributeError:
         pass
 
@@ -157,30 +165,36 @@ async def search_info_from_steam(game_name):
         total_reviews = total_reviews.find_next_sibling().find('span')
         if total_reviews:
             index = 1 if len(percentages) > 2 else 0
-            percentage = split_with_delimiter(percentages[index].attrs.get('data-tooltip-html'), '%')
+            percentage = split_with_delimiter(
+                percentages[index].attrs.get('data-tooltip-html'), '%')
             add_percentage(total_reviews, percentage)
-            items.append(Item(prefix='Reviews generales: ', content=total_reviews))
+            items.append(
+                Item(prefix='Reviews generales: ', content=total_reviews))
     except AttributeError:
         pass
 
     try:
         realese_date = soup.find('div', class_='date')
-        items.append(Item(prefix='Fecha de lanzamiento: ', content=realese_date))
+        items.append(
+            Item(prefix='Fecha de lanzamiento: ', content=realese_date))
     except AttributeError:
         pass
 
     try:
         all_languages = soup.find_all('td', class_='ellipsis')
-        with_interface_supported = list(filter(lambda x: x.find_next_sibling().find('span'), all_languages))
+        with_interface_supported = list(
+            filter(lambda x: x.find_next_sibling().find('span'), all_languages))
         if len(with_interface_supported) > 5:
             with_interface_supported = with_interface_supported[:5]
             temp = SimpleNamespace(propertyName='string')
             temp.string = '...'
             with_interface_supported.append(temp)
-        with_interface_supported = generate_string_from_collection(with_interface_supported, ', ')
+        with_interface_supported = generate_string_from_collection(
+            with_interface_supported, ', ')
         languages = SimpleNamespace(propertyName='string')
         languages.string = with_interface_supported
-        items.append(Item(prefix='Idiomas de interfaz disponibles: ', content=languages))
+        items.append(
+            Item(prefix='Idiomas de interfaz disponibles: ', content=languages))
     except AttributeError:
         pass
 
@@ -204,13 +218,15 @@ async def search_info_from_steam(game_name):
 
         requeriments = SimpleNamespace(propertyName='string')
         requeriments.string = requeriments_string
-        items.append(Item(prefix='\nRequisitos minimos:\n', content=requeriments))
+        items.append(
+            Item(prefix='\nRequisitos minimos:\n', content=requeriments))
 
     except AttributeError:
         pass
 
     items = list(filter(lambda x: x and x.content, items))
-    message = '\n'.join(map(lambda x: x.prefix + x.content.string.strip(), items))
+    message = '\n'.join(
+        map(lambda x: x.prefix + x.content.string.strip(), items))
 
     is_early_access = soup.find('div', class_='early_access_header')
 
