@@ -31,11 +31,7 @@ def send_response_with_quote(ctx, response):
 
 def send_response_with_quote_format(ctx, message):
     return ctx.send('```{0}\n```'.format(message))
-
-def send_response_with_quote_format_image(ctx, message_embed):
-    embed = Embed(description='```{0}\n```'.format(message_embed.message))
-    embed.set_image(url=message_embed.embed_image_url)
-    return ctx.send(embed=embed)
+    
 
 def send_response_with_specific_quote(ctx, response, quote):
     return ctx.send('>>> {0}\n{1}'.format(quote, response))

@@ -1,7 +1,4 @@
 from discord.ext import commands
-
-
-
 from bot import Database
 from bot.ErrorHandler import error_handler
 from bot.MessagesResponses import function_switcher, wiki_search, genius, choose, \
@@ -11,12 +8,11 @@ from bot.Multimedia import (radio, play_from_youtube, play_next_multimedia,
 from bot.Poll import startpoll, endpoll
 from bot.Log import create_main_log, log
 from bot.Utils import send_response_with_quote, send_poll_message, send_response_with_quote_format, \
-    get_all_args_as_string, get_message_of_context, get_timer, send_response_with_quote_format_image
+    get_all_args_as_string, get_message_of_context, get_timer, send_response
 
 create_main_log()
 
 bot = commands.Bot(command_prefix=".")
-
 
 @bot.event
 async def on_ready():
@@ -71,7 +67,8 @@ async def steam_game_info(ctx, *args):
 @not_in_blacklist()
 async def playing_info(ctx, *args):
     message_img = await steam_chart(get_all_args_as_string(args))
-    await send_response_with_quote_format_image(ctx, message_img)
+    await send_response(ctx, message_img.embed_image_url)
+    await send_response_with_quote_format(ctx, message_img.message)
 
 
 @bot.command(name='respondeme', help='El pocho puede responder una pregunta que le hagas')
