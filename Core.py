@@ -1,7 +1,8 @@
+import logging
 from discord.ext import commands
 import configparser
 from app import Database
-from app.ErrorHandler import error_handler
+from app.ErrorHandler import NoTokenProvided, error_handler
 from app.MessagesResponses import function_switcher, wiki_search, genius, choose, \
     steam_chart, search_info_from_steam
 from app.Multimedia import (radio, play_from_youtube, play_next_multimedia,
@@ -22,12 +23,33 @@ def main():
     Database.init_globals(bot.commands)
     create_main_log()
 
-    config = configparser.ConfigParser()
-    config.read('localconfig/config.cfg')
-    active = config['MAIN']['ACTIVE']
-    token = config['MAIN'][active]
+    config = loadConfig()
+    profile = config['MAIN']['PROFILE']
+
+    if not config.has_option('TOKENS', profile):
+        raise NoTokenProvided()
+
+    token = config['TOKENS'][profile]
 
     bot.run(token)
+
+
+def loadConfig():
+    config = configparser.ConfigParser()
+    config.read('localconfig/config.cfg')
+
+    if not config.has_section('MAIN'):
+        createDefaultConfig(config)
+
+    config.read('localconfig/config.cfg')
+    return config
+
+
+def createDefaultConfig(config):
+    config['MAIN'] = {'PROFILE': 'DEV'}
+
+    with open('localconfig/config.cfg', 'w') as configfile:
+        config.write(configfile)
 
 
 def user_is_not_in_blacklist():

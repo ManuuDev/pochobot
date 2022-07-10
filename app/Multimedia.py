@@ -8,7 +8,7 @@ import youtube_dl
 from discord import VoiceClient, ClientException
 
 from . import Database
-from .ErrorHandler import CustomError, MultimediaError
+from .ErrorHandler import CustomUserError, MultimediaError
 from .MultimediaObjects import multimedia_factory
 from .Utils import send_response_with_quote, get_channel_from_context, search_for_youtube_video, send_response_with_quote_format, \
     get_radio_from_value, is_empty
@@ -31,7 +31,7 @@ async def radio(ctx, genre, bot):
             await send_response_with_quote(ctx, 'No tengo esa radio incluida')
         else:
             await disconnect(bot, get_channel_from_context(ctx))
-    except CustomError as exception:
+    except CustomUserError as exception:
         raise exception
 
 
@@ -47,7 +47,7 @@ async def play_from_youtube(ctx, url, bot):
         else:
             await play_audio(ctx, bot, url=url)
 
-    except CustomError as exception:
+    except CustomUserError as exception:
         raise exception
     except TimeoutError:
         raise MultimediaError(
