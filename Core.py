@@ -1,4 +1,4 @@
-import logging
+import discord
 from discord.ext import commands
 import configparser
 from app import Database
@@ -11,10 +11,10 @@ from app.Poll import startpoll, endpoll
 from app.Log import create_main_log, log
 from app.Utils import send_response_with_quote, send_poll_message, send_response_with_quote_format, \
     get_all_args_as_string, get_message_of_context, get_timer, send_response
-
+from app.Tasks import check_empty_voice_channel
 
 ######################### GLOBALS #########################
-bot = commands.Bot(command_prefix=".")
+bot = commands.Bot(command_prefix=".", intents=discord.Intents().all())
 ######################### GLOBALS #########################
 
 
@@ -30,6 +30,8 @@ def main():
         raise NoTokenProvided()
 
     token = config['TOKENS'][profile]
+
+    check_empty_voice_channel.start(bot)
 
     bot.run(token)
 
