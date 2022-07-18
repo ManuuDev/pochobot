@@ -1,7 +1,7 @@
 from threading import Timer
 
-from .ErrorHandler import PollError
-from .Utils import strip_strings_from_list
+from ..System.ErrorHandler import PollError
+from ..System.Utils import strip_strings_from_list
 
 
 class Poll:
@@ -41,7 +41,7 @@ pollStarted: bool = False
 currentPoll: Poll
 
 
-async def startpoll(ctx, text):
+async def start_poll(ctx, text):
     global pollStarted, currentPoll
 
     if not pollStarted:
@@ -98,7 +98,7 @@ def clean_poll():
     pollStarted = False
 
 
-async def endpoll(ctx, timeout=False):
+async def end_poll(ctx, timeout=False):
     global currentPoll
 
     if ctx.author.id != currentPoll.author_id and not timeout:

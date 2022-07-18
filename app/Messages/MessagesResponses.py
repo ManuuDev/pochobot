@@ -1,4 +1,4 @@
-from .Utils import fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
+from ..System.Utils import fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
     get_similarity_avg_of_phrases
 import collections
 import random
@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import aiohttp
 import wikipediaapi
 from bs4 import BeautifulSoup
-from . import Database
-from .ErrorHandler import EmptyResponse
+from ..Core import Database
+from ..System.ErrorHandler import EmptyResponse
 
 
 headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5',

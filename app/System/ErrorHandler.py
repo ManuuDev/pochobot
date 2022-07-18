@@ -1,5 +1,5 @@
 import re
-from . import Database
+from ..Core import Database
 from discord.ext import commands
 from .Log import log
 import logging as logging

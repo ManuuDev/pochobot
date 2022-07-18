@@ -7,10 +7,10 @@ from typing import Final
 import youtube_dl
 from discord import VoiceClient, ClientException
 
-from . import Database
-from .ErrorHandler import CustomUserError, MultimediaError
+from ..Core import Database
+from ..System.ErrorHandler import CustomUserError, MultimediaError
 from .MultimediaObjects import multimedia_factory
-from .Utils import send_response_with_quote, get_channel_from_context, search_for_youtube_video, send_response_with_quote_format, \
+from ..System.Utils import send_response_with_quote, get_channel_from_context, search_for_youtube_video, send_response_with_quote_format, \
     get_radio_from_value, is_empty
 
 # TODO Cache

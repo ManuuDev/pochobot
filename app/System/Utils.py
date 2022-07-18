@@ -4,7 +4,7 @@ import re
 from difflib import SequenceMatcher
 from threading import Timer
 from youtube_search import YoutubeSearch
-from . import Database
+from ..Core import Database
 from . import ErrorHandler as ErrorHandler
 
 
