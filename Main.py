@@ -16,14 +16,10 @@ bot = commands.Bot(command_prefix=".", intents=discord.Intents().all())
 
 
 def main():
-    
+
     create_main_log()
 
-    for filename in os.listdir("app/Cogs"):
-        if filename.endswith(".py"):
-            print(f'app.Cogs.{filename[:-3]}')
-            bot.load_extension(f"app.Cogs.{filename[:-3]}")
-            log(f"Cog {filename} cargado")
+    load_cogs()
 
     Database.init_globals(bot.commands)
 
@@ -36,6 +32,14 @@ def main():
     token = config['TOKENS'][profile]
 
     bot.run(token)
+
+
+def load_cogs():
+    for filename in os.listdir("app/Cogs"):
+        if filename.endswith(".py"):
+            print(f'app.Cogs.{filename[:-3]}')
+            bot.load_extension(f"app.Cogs.{filename[:-3]}")
+            log(f"Cog {filename} cargado")
 
 
 def loadConfig():
