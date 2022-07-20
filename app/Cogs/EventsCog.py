@@ -20,7 +20,7 @@ class EventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        message = f'Comando: {ctx.invoked_with}, Canal: {ctx.channel.name}, Autor: {ctx.author.name}, Argumentos: {ctx.args[1:]} '
+        message = f'Comando: {ctx.invoked_with}, Canal: {ctx.channel.name}, Autor: {ctx.author.name}, Argumentos: {ctx.args[2:]} '
         log(message)
 
 
