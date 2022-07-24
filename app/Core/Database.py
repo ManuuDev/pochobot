@@ -1,9 +1,11 @@
 import json
 import os
+from turtle import update
 import requests
+from datetime import date, datetime
 
 PREFIX: str = 'databases/'
-
+DATE_FORMAT: str = "%d/%m/%y"
 simpleTalkDictionary: dict
 indexedGamesDict: dict
 radios: dict
@@ -38,22 +40,40 @@ def init_responses_databases():
 def init_steam_database():
     global indexedGamesDict
 
-    cwd = os.getcwd()
-    separator = os.path.sep
-    database_path = cwd + separator + PREFIX + 'steamDatabase.json'
+    database_path = get_database_temp_path()
 
-    if os.path.isfile(database_path):
+    if os.path.isfile(database_path) and was_created_today(database_path):
         with open(database_path, 'r') as inputfile:
             indexedGamesDict = json.loads(inputfile.read())
-
     else:
-        page = requests.get(
-            "http://api.steampowered.com/ISteamApps/GetAppList/v0001/")
-        json_structure = json.loads(page.content)
-        game_list = json_structure['applist']['apps']['app']
-        indexedGamesDict = create_abc_for_db(game_list)
-        with open(database_path, 'w') as outfile:
-            json.dump(indexedGamesDict, outfile)
+        update_steam_database()
+
+
+def update_steam_database():
+    global indexedGamesDict
+    page = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0001/")
+    json_structure = json.loads(page.content)
+    game_list = json_structure['applist']['apps']['app']
+    indexedGamesDict = create_abc_for_db(game_list)
+    with open(get_database_temp_path(), 'w') as outfile:
+        json.dump(indexedGamesDict, outfile)
+
+
+def was_created_today(file_path):
+    tmp_1 = get_file_creation_date(file_path)
+    tmp_2 = date.today().strftime(DATE_FORMAT)
+    return tmp_1 == tmp_2
+
+
+def get_file_creation_date(path):
+    t = os.path.getmtime(path)
+    return datetime.fromtimestamp(t).strftime(DATE_FORMAT)
+
+
+def get_database_temp_path():
+    cwd = os.getcwd()
+    separator = os.path.sep
+    return f'{cwd}{separator}{PREFIX}steamDatabase.json'
 
 
 def create_abc_for_db(game_list):
@@ -62,7 +82,7 @@ def create_abc_for_db(game_list):
 
     for item in game_list:
         if item:
-            first_char = item.get('name')[0]
+            first_char = item.get('name')
 
             if not char or char != first_char:
                 char = first_char
