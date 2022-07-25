@@ -37,7 +37,6 @@ def main():
 def load_cogs():
     for filename in os.listdir("app/Cogs"):
         if filename.endswith(".py"):
-            print(f'app.Cogs.{filename[:-3]}')
             bot.load_extension(f"app.Cogs.{filename[:-3]}")
             log(f"Cog {filename} cargado")
 

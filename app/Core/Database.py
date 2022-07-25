@@ -30,7 +30,7 @@ def init_globals(commands):
 def init_responses_databases():
     global simpleTalkDictionary, fastAnswerList, radios
 
-    database_file = open(get_path_with_prefix('responsesDatabase.json'), "r")
+    database_file = open(append_database_path('responsesDatabase.json'), "r")
     data = json.loads(database_file.read())
     simpleTalkDictionary = data['simpleTalk']
     fastAnswerList = data['genius']['fastAnswer']
@@ -40,7 +40,7 @@ def init_responses_databases():
 def init_steam_database():
     global indexedGamesDict
 
-    database_path = get_database_temp_path()
+    database_path = get_database_path()
 
     if os.path.isfile(database_path) and was_created_today(database_path):
         with open(database_path, 'r') as inputfile:
@@ -51,18 +51,18 @@ def init_steam_database():
 
 def update_steam_database():
     global indexedGamesDict
-    page = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0001/")
+
+    page = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v2/")
     json_structure = json.loads(page.content)
-    game_list = json_structure['applist']['apps']['app']
-    indexedGamesDict = create_abc_for_db(game_list)
-    with open(get_database_temp_path(), 'w') as outfile:
+    game_list = json_structure['applist']['apps']
+    indexedGamesDict = create_steam_index(game_list)
+
+    with open(get_database_path(), 'w') as outfile:
         json.dump(indexedGamesDict, outfile)
 
 
 def was_created_today(file_path):
-    tmp_1 = get_file_creation_date(file_path)
-    tmp_2 = date.today().strftime(DATE_FORMAT)
-    return tmp_1 == tmp_2
+    return get_file_creation_date(file_path) == date.today().strftime(DATE_FORMAT)
 
 
 def get_file_creation_date(path):
@@ -70,30 +70,30 @@ def get_file_creation_date(path):
     return datetime.fromtimestamp(t).strftime(DATE_FORMAT)
 
 
-def get_database_temp_path():
+def get_database_path():
     cwd = os.getcwd()
     separator = os.path.sep
     return f'{cwd}{separator}{PREFIX}steamDatabase.json'
 
 
-def create_abc_for_db(game_list):
+def create_steam_index(game_list):
     dictionary = dict()
     char: str = None
 
-    for item in game_list:
-        if item:
-            first_char = item.get('name')
+    for game in game_list:
+        if game:
+            first_char = game.get('name')[0] if len(game.get('name')) > 0 else None
 
             if not char or char != first_char:
                 char = first_char
                 if char not in dictionary:
                     dictionary[char] = list()
 
-            game_tuple = (item.get('name').strip(), item.get('appid'))
+            game_tuple = (game.get('name').strip(), game.get('appid'))
             dictionary[char].append(game_tuple)
 
     return dictionary
 
 
-def get_path_with_prefix(filename):
+def append_database_path(filename):
     return PREFIX + filename

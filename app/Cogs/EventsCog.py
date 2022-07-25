@@ -10,7 +10,7 @@ class EventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        message = 'Logged on as {0}!'.format(self.bot.user)
+        message = 'Sesión iniciada como {0}'.format(self.bot.user)
         print(message)
         log(message)
 
