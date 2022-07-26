@@ -7,7 +7,7 @@ import aiohttp
 import wikipediaapi
 from bs4 import BeautifulSoup
 from ..Core import Database
-from ..System.ErrorHandler import EmptyResponse
+from ..System.ErrorHandler import EmptyResponse, GameNotFound
 
 
 headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5',
@@ -83,9 +83,13 @@ async def steam_chart(game_name):
         soup = BeautifulSoup(response, 'html.parser')
 
         div = soup.find('div', id='app-heading')
-
-        image_src = div.find_next('img').attrs.get('src')
-        image_url = f'{ url_raw + image_src }'
+        image_url : str = ''
+        
+        try:
+            image_src = div.find_next('img').attrs.get('src')
+            image_url = f'{ url_raw + image_src }'
+        except:
+            pass
 
         current_playing = div.find_all('span', class_='num')[0].string
 
@@ -94,9 +98,8 @@ async def steam_chart(game_name):
         text = f'Juego: {game[0]}\nActualmente jugando: {current_playing}\nPromedio mensual: {avg_players}'
 
         return message_with_image(message=text, embed_image_url=image_url)
-
-    except IndexError:
-        return 'No se encontro el juego en steamcharts'
+    except Exception:
+        raise GameNotFound()
 
 
 def steam_search(game_name):

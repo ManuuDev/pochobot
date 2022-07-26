@@ -39,6 +39,11 @@ class NoTokenProvided(CustomSystemError):
         super().__init__('Es necesario proveer un token para el perfil seleccionado. Utilice la sección TOKENS en el archivo config.cfg.')
 
 
+class GameNotFound(CustomUserError):
+    def __init__(self):
+        super().__init__('Fijate de escribir bien el nombre pa.')
+
+
 async def error_handler(ctx, exception):
     try:
         if hasattr(exception, 'original'):
