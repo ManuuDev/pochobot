@@ -66,7 +66,10 @@ class Song(Multimedia):
         self.title = info.get('title')
         self.typo = 'song'
         self.duration = str(datetime.timedelta(seconds=info.get('duration')))
-        url = info['formats'][0]['url']
+        formats = info['formats']
+        #Extracts the url of the streaming of format 48000k quality 1
+        format48kq1 = [x for x in formats if x.get('format_id') == '600'][0]
+        url = format48kq1['url']
         self.audioSource = FFmpegOpusAudio(url, before_options=self.beforeArgs)
         self.processed = True
 
@@ -116,6 +119,7 @@ class YoutubeLive(Multimedia):
         self.title = info.get('title')
         self.typo = 'live'
         self.duration = 'live stream'
+        #TODO Apply similar fix as format48kq1
         url = info['formats'][0]['url']
         self.audioSource = FFmpegOpusAudio(url, before_options=self.beforeArgs)
         self.processed = True

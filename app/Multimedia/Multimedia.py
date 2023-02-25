@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from typing import Final
 
-import youtube_dl
+import yt_dlp
 from discord import VoiceClient, ClientException
 
 from ..Core import Database
@@ -269,7 +269,7 @@ def check_permissions(ctx, bot, channel):
 # TODO cookiefile
 def get_multimedia_metadata(url):
     options = {'extract_flat': True, 'quiet': True, 'no_warnings': True}
-    return extract_info(url, options)
+    return extract_info_loop(url, options)
 
 
 def get_multimedia_data(url):
@@ -283,17 +283,17 @@ def get_multimedia_data(url):
         'no_warnings': True,
     }
 
-    return extract_info(url, options)
+    return extract_info_loop(url, options)
 
 
-def extract_info(url, options, retry=False):
-    with youtube_dl.YoutubeDL(options) as ydl:
+def extract_info_loop(url, options, retry=False):
+    with yt_dlp.YoutubeDL(options) as ydl:
         try:
             return ydl.extract_info(url, download=False, extra_info=options)
-        except youtube_dl.utils.DownloadError as exception:
+        except yt_dlp.utils.DownloadError as exception:
             if not retry:
                 live_options = {'hls_prefer_native': True}
-                return extract_info(url, live_options, retry=True)
+                return extract_info_loop(url, live_options, retry=True)
             else:
                 delete_from_queue(url, exception)
         except Exception as exception:
