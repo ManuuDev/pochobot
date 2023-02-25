@@ -119,7 +119,9 @@ class YoutubeLive(Multimedia):
         self.title = info.get('title')
         self.typo = 'live'
         self.duration = 'live stream'
-        #TODO Apply similar fix as format48kq1
-        url = info['formats'][0]['url']
+        formats = info['formats']
+        #Extracts the url of the streaming of format mp4 854p
+        formatmp4854p = [x for x in formats if x.get('format_id') == '94'][0]
+        url = formatmp4854p['url']
         self.audioSource = FFmpegOpusAudio(url, before_options=self.beforeArgs)
         self.processed = True
