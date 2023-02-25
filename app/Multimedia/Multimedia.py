@@ -19,8 +19,6 @@ youtubeQueue: list = list()
 lock = Lock()
 
 youtubeRawURl: Final[str] = 'https://www.youtube.com'
-youtubePrefixVideoUrl: Final[str] = youtubeRawURl + '/watch?v='
-
 
 async def radio(ctx, genre, bot):
     url = Database.radios.get(genre)
@@ -131,7 +129,7 @@ def add_playlist_to_queue(ctx, queue, bot):
     lock.acquire()
 
     for info in queue:
-        url = youtubePrefixVideoUrl + info.get('url')
+        url = info.get('url')
         multimedia = multimedia_factory(ctx, url=url, typo='song')
         youtubeQueue.append(multimedia)
 
@@ -150,7 +148,7 @@ def get_first_song_url(info):
     entries = info.get('entries')
     if len(entries) > 1:
         first_song = entries[0]
-        return youtubePrefixVideoUrl + first_song.get('url')
+        return first_song.get('url')
     else:
         return info.get('webpage_url').split('&list=')[0]
 
