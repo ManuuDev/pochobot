@@ -39,6 +39,14 @@ class NoTokenProvided(CustomSystemError):
         super().__init__('Es necesario proveer un token para el perfil seleccionado. Utilice la sección TOKENS en el archivo config.cfg.')
 
 
+class OutdatedPackages(CustomSystemError):
+    def __init__(self, packages : list):
+        super().__init__('Parece que algunas dependencias necesarias no estan actualizadas, verifique el archivo de requerimientos. Las dependencias desactualizadas son: {}'.format(packages))
+
+class ErrorChekingOutdatedPackages(CustomSystemError):
+    def __init__(self):
+        super().__init__('Hubo un error al verificar las versiones de las dependencias.')
+
 class GameNotFound(CustomUserError):
     def __init__(self):
         super().__init__('Fijate de escribir bien el nombre pa.')
