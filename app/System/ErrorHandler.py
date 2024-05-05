@@ -4,8 +4,7 @@ from discord.ext import commands
 from .Log import log
 import logging as logging
 import traceback as traceback
-from .Utils import similairty_ratio, send_response_with_quote
-
+from app.System import Utils as utils
 
 class CustomUserError(Exception):
     messageToUser: str
@@ -59,17 +58,17 @@ async def error_handler(ctx, exception):
         else:
             raise exception
     except CustomUserError as customUserError:
-        await send_response_with_quote(ctx, customUserError.messageToUser)
+        await utils.send_response_with_quote(ctx, customUserError.messageToUser)
     except CustomSystemError as customSystemError:
         log(customSystemError.messageToSystem, level=logging.ERROR)
     except commands.CommandNotFound as exception:
         command_try = re.search('\"(.*)\"', exception.args[0]).group(1)
         if command_try.count('.') == 0:
-            match = max(Database.commandsNames, key=lambda c: similairty_ratio(
+            match = max(Database.commandsNames, key=lambda c: utils.similairty_ratio(
                 c.lower(), command_try.lower()))
-            await send_response_with_quote(ctx, 'Ese comando no existe troesma, el mas parecido es {}'.format(match))
+            await utils.send_response_with_quote(ctx, 'Ese comando no existe troesma, el mas parecido es {}'.format(match))
     except commands.CheckFailure:
         pass
     except Exception:
         log(traceback.format_exc(), level=logging.ERROR)
-        await send_response_with_quote(ctx, 'Error al procesar el comando')
+        await utils.send_response_with_quote(ctx, 'Error al procesar el comando')

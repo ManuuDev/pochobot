@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 import configparser
 from app.Core import Database
+from app.System.Utils import get_absolute_path
 from app.System.ErrorHandler import ErrorChekingOutdatedPackages, NoTokenProvided, OutdatedPackages
 from app.System.Log import create_main_log, log
 
@@ -41,7 +42,7 @@ def main():
 
 
 def load_cogs():
-    for filename in os.listdir("app/Cogs"):
+    for filename in os.listdir(get_absolute_path("app/Cogs")):
         if filename.endswith(".py"):
             bot.load_extension(f"app.Cogs.{filename[:-3]}")
             log(f"Cog {filename} cargado")
@@ -49,19 +50,19 @@ def load_cogs():
 
 def load_config():
     config = configparser.ConfigParser()
-    config.read('localconfig/config.cfg')
+    config.read(get_absolute_path("localconfig/config.cfg"))
 
     if not config.has_section('MAIN'):
         create_default_config(config)
 
-    config.read('localconfig/config.cfg')
+    config.read(get_absolute_path("localconfig/config.cfg"))
     return config
 
 
 def create_default_config(config):
     config['MAIN'] = {'PROFILE': 'DEV'}
 
-    with open('localconfig/config.cfg', 'w') as configfile:
+    with open(get_absolute_path("localconfig/config.cfg", "w")) as configfile:
         config.write(configfile)
 
 
@@ -70,7 +71,7 @@ def check_outdated_packages():
         pip_outdated_output = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--outdated', '--format', 'json'])
         json_output = [x['name'] for x in json.loads(pip_outdated_output.decode())]
 
-        with open("requirements.txt") as f:
+        with open(get_absolute_path("requirements.txt")) as f:
             packages = f.read().split("\n")
             requirements_regex = r'^([^><=]*)$'
             package_names = [re.match(requirements_regex, x) for x in packages]

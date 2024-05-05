@@ -1,4 +1,4 @@
-from discord import Embed
+import os
 import asyncio
 import re
 from difflib import SequenceMatcher
@@ -7,6 +7,7 @@ from youtube_search import YoutubeSearch
 from ..Core import Database
 from . import ErrorHandler as ErrorHandler
 
+MAIN_FOLDER_NAME : str = 'pochobot'
 
 #                               Commands                                  #
 def get_all_args_as_string(args):
@@ -183,3 +184,12 @@ def ratio(string_tuple):
 
 def remove_special_characters(string):
     return re.sub(r'[^A-Za-z0-9ñÑ ]+', ' ', string.strip()).lower()
+
+def get_absolute_path(relative_path : str):
+    cwd = os.getcwd()
+    separator = os.path.sep
+    
+    if(MAIN_FOLDER_NAME not in cwd):
+        cwd = f'{cwd}{separator}{MAIN_FOLDER_NAME}'
+
+    return f'{cwd}{separator}{relative_path}'
