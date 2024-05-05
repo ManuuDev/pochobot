@@ -32,7 +32,7 @@ def function_switcher(message):
 
 
 def wiki_search(text):
-    wikipedia = wikipediaapi.Wikipedia('es')
+    wikipedia = wikipediaapi.Wikipedia(language='es', user_agent="pochobot/1.0 generic-library/0.0")
     wikipedia_page = wikipedia.page(text)
 
     if wikipedia_page.exists():
