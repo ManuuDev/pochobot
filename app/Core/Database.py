@@ -1,6 +1,5 @@
 import json
 import os
-from turtle import update
 import requests
 from datetime import date, datetime
 
