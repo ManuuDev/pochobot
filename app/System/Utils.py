@@ -16,8 +16,8 @@ def get_all_args_as_string(args):
     return ' '.join(args).strip()
 
 
-def get_timer(bot, function, seconds=30):
-    return Timer(seconds, lambda: asyncio.run_coroutine_threadsafe(function, bot.loop))
+def get_timer(bot, ctx, function, seconds=5.0):
+    return Timer(interval=seconds, function= lambda: asyncio.run_coroutine_threadsafe(function(ctx, True), bot.loop))
 
 
 #                               Commands                                  #

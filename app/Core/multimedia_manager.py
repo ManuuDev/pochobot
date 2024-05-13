@@ -18,6 +18,9 @@ youtubeRawURl: Final[str] = 'https://www.youtube.com'
 
 
 async def radio(ctx, genre, bot):
+    if not genre:
+        raise CustomUserError('Tenes que decirme una radio maquinola')
+
     url = database.radios.get(genre)
     try:
         if url:
