@@ -4,12 +4,14 @@ import re
 from difflib import SequenceMatcher
 from threading import Timer
 from youtube_search import YoutubeSearch
-from ..Core import Database
-import app.System.ErrorHandler as ErrorHandler
+from app.core import database
+from app.system.error_handler import error_handler
 
-MAIN_FOLDER_NAME : str = 'pochobot'
+MAIN_FOLDER_NAME: str = 'pochobot'
 
 #                               Commands                                  #
+
+
 def get_all_args_as_string(args):
     return ' '.join(args).strip()
 
@@ -42,7 +44,7 @@ async def send_poll_message(ctx, poll):
     message = await send_response_with_quote_format(ctx, poll.response_content)
 
     for index in range(poll.ammount_of_options):
-        await message.add_reaction(Database.numbers[index])
+        await message.add_reaction(database.numbers[index])
 
     return message
 
@@ -64,7 +66,7 @@ def get_channel_from_context(ctx):
 
 #                               Multimedia                                #
 def get_radio_from_value(url):
-    for key, value in Database.radios.items():
+    for key, value in database.radios.items():
         if value == url:
             return key
 
@@ -97,7 +99,7 @@ def search_for_youtube_video(message=None, search=None):
 
         return 'https://www.youtube.com' + suffix
     else:
-        raise ErrorHandler.EmptyResponse('No encontre ningun video')
+        raise error_handler.EmptyResponse('No encontre ningun video')
 
 
 #                               Multimedia                                #
@@ -185,11 +187,12 @@ def ratio(string_tuple):
 def remove_special_characters(string):
     return re.sub(r'[^A-Za-z0-9ñÑ ]+', ' ', string.strip()).lower()
 
-def get_absolute_path(relative_path : str):
+
+def get_absolute_path(relative_path: str):
     cwd = os.getcwd()
     separator = os.path.sep
-    
-    if(MAIN_FOLDER_NAME not in cwd):
+
+    if (MAIN_FOLDER_NAME not in cwd):
         cwd = f'{cwd}{separator}{MAIN_FOLDER_NAME}'
 
     return f'{cwd}{separator}{relative_path}'

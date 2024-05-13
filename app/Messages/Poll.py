@@ -1,7 +1,7 @@
 from threading import Timer
 
-from ..System.ErrorHandler import PollError
-from ..System.Utils import strip_strings_from_list
+from app.system.error_handler import PollError
+from app.system.utils import strip_strings_from_list
 
 
 class Poll:

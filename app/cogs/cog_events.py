@@ -1,7 +1,7 @@
 from discord.ext import commands
 
-from app.System.ErrorHandler import error_handler
-from app.System.Log import log
+from app.system.error_handler import error_handler
+from app.system.log import log
 
 
 class EventsCog(commands.Cog):

@@ -6,10 +6,10 @@ import sys
 import discord
 from discord.ext import commands
 import configparser
-from app.Core import Database
-from app.System.Utils import get_absolute_path
-from app.System.ErrorHandler import ErrorChekingOutdatedPackages, NoTokenProvided, OutdatedPackages
-from app.System.Log import create_main_log, log
+from app.core import database
+from app.system.utils import get_absolute_path
+from app.system.error_handler import ErrorChekingOutdatedPackages, NoTokenProvided, OutdatedPackages
+from app.system.log import create_main_log, log
 
 ################################################## GLOBALS ##################################################
 
@@ -28,7 +28,7 @@ def main():
 
     load_cogs()
 
-    Database.init_globals(bot.commands)
+    database.init_globals(bot.commands)
 
     config = load_config()
     profile = config['MAIN']['PROFILE']
@@ -42,27 +42,27 @@ def main():
 
 
 def load_cogs():
-    for filename in os.listdir(get_absolute_path("app/Cogs")):
+    for filename in os.listdir(get_absolute_path("app/cogs")):
         if filename.endswith(".py"):
-            bot.load_extension(f"app.Cogs.{filename[:-3]}")
+            bot.load_extension(f"app.cogs.{filename[:-3]}")
             log(f"Cog {filename} cargado")
 
 
 def load_config():
     config = configparser.ConfigParser()
-    config.read(get_absolute_path("localconfig/config.cfg"))
+    config.read(get_absolute_path("config/config.cfg"))
 
     if not config.has_section('MAIN'):
         create_default_config(config)
 
-    config.read(get_absolute_path("localconfig/config.cfg"))
+    config.read(get_absolute_path("config/config.cfg"))
     return config
 
 
 def create_default_config(config):
     config['MAIN'] = {'PROFILE': 'DEV'}
 
-    with open(get_absolute_path("localconfig/config.cfg", "w")) as configfile:
+    with open(get_absolute_path("config/config.cfg", "w")) as configfile:
         config.write(configfile)
 
 

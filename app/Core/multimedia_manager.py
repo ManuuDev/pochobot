@@ -3,16 +3,12 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from typing import Final
-
 import yt_dlp
 from discord import VoiceClient, ClientException
-
-from ..Core import Database
-from ..System.ErrorHandler import CustomUserError, MultimediaError
-from .MultimediaObjects import multimedia_factory
-from ..System.Utils import send_response_with_quote, get_channel_from_context, search_for_youtube_video, send_response_with_quote_format, \
-    get_radio_from_value, is_empty
-
+from app.models.multimedia.multimedia_factory import multimedia_factory
+from app.core import database
+from app.system.error_handler import CustomUserError, MultimediaError
+from app.system.utils import get_channel_from_context, get_radio_from_value, is_empty, search_for_youtube_video, send_response_with_quote, send_response_with_quote_format
 # TODO Cache
 
 youtubeQueue: list = list()
@@ -20,8 +16,9 @@ lock = Lock()
 
 youtubeRawURl: Final[str] = 'https://www.youtube.com'
 
+
 async def radio(ctx, genre, bot):
-    url = Database.radios.get(genre)
+    url = database.radios.get(genre)
     try:
         if url:
             await play_audio(ctx, bot, url)

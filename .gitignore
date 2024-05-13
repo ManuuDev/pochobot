@@ -4,5 +4,5 @@ __pycache__
 *.log
 .env
 .venv
-/localconfig
-/databases/steamDatabase.json
+/config
+/databases/database_steam.json

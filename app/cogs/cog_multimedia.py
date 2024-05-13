@@ -1,8 +1,6 @@
 from discord.ext import commands
-
-from app.Multimedia.Multimedia import (radio, play_from_youtube, play_next_multimedia,
-                                       disconnect, clean_queue, print_queue, resume, pause)
-from app.System.Utils import send_response_with_quote_format, get_all_args_as_string
+from app.core.multimedia_manager import clean_queue, disconnect, pause, play_from_youtube, play_next_multimedia, print_queue, radio, resume
+from app.system.utils import send_response_with_quote_format, get_all_args_as_string
 
 
 class MultimediaCog(commands.Cog):

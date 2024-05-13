@@ -1,6 +1,6 @@
 from discord.ext import commands
-from app.Messages.Poll import Poll, start_poll, end_poll
-from app.System.Utils import get_all_args_as_string, get_timer, send_poll_message, send_response_with_quote_format
+from app.messages.poll import start_poll, end_poll
+from app.system.utils import get_all_args_as_string, get_timer, send_poll_message, send_response_with_quote_format
 
 
 class PollsCog(commands.Cog):

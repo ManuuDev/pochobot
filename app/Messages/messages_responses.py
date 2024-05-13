@@ -1,4 +1,4 @@
-from ..System.Utils import fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
+from app.system.utils import fetch, split_with_delimiter, add_percentage, generate_string_from_collection, \
     get_similarity_avg_of_phrases
 import collections
 import random
@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import aiohttp
 import wikipediaapi
 from bs4 import BeautifulSoup
-from ..Core import Database
-from ..System.ErrorHandler import EmptyResponse, GameNotFound
+from app.core import database
+from app.system.error_handler import EmptyResponse, GameNotFound
 
 
 headers = {'Accept-Language': 'es-ES, es;q=0.9, en;q=0.5',
@@ -52,8 +52,8 @@ def wiki_search(text):
 
 def genius(text):
     if text.endswith('?'):
-        index = random.choice(range(0, len(Database.fastAnswerList)))
-        return Database.fastAnswerList[index]
+        index = random.choice(range(0, len(database.fastAnswerList)))
+        return database.fastAnswerList[index]
     else:
         return 'Eso no es una pregunta boludo'
 
@@ -67,7 +67,7 @@ def choose(text):
 
 
 def simple_talk(text):
-    return Database.simpleTalkDictionary.get(text)
+    return database.simpleTalkDictionary.get(text)
 
 
 async def steam_chart(game_name):
@@ -104,8 +104,8 @@ async def steam_chart(game_name):
 
 def steam_search(game_name):
     first_char = game_name[0]
-    list_with_starter_char = Database.indexedGamesDict[first_char.lower(
-    )] + Database.indexedGamesDict[first_char.upper()]
+    list_with_starter_char = database.indexedGamesDict[first_char.lower(
+    )] + database.indexedGamesDict[first_char.upper()]
     match = max(list_with_starter_char,
                 key=lambda x: get_similarity_avg_of_phrases(x[0], game_name))
     return match

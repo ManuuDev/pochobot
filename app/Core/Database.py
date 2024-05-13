@@ -1,7 +1,7 @@
 import json
 import requests
 from datetime import date, datetime
-from app.System.Utils import get_absolute_path as format_path
+from app.system.utils import get_absolute_path as format_path
 import os
 
 PREFIX: str = 'databases/'
@@ -30,7 +30,7 @@ def init_globals(commands):
 def init_responses_databases():
     global simpleTalkDictionary, fastAnswerList, radios
 
-    database_file = open(get_database_path("responsesDatabase.json"), "r")
+    database_file = open(get_database_path("database_responses.json"), "r")
     data = json.loads(database_file.read())
     simpleTalkDictionary = data['simpleTalk']
     fastAnswerList = data['genius']['fastAnswer']
@@ -40,7 +40,7 @@ def init_responses_databases():
 def init_steam_database():
     global indexedGamesDict
 
-    database_path = get_database_path("steamDatabase.json")
+    database_path = get_database_path("database_steam.json")
 
     if os.path.isfile(database_path) and was_created_today(database_path):
         with open(database_path, 'r') as inputfile:
@@ -52,12 +52,13 @@ def init_steam_database():
 def update_steam_database():
     global indexedGamesDict
 
-    page = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v2/")
+    page = requests.get(
+        "http://api.steampowered.com/ISteamApps/GetAppList/v2/")
     json_structure = json.loads(page.content)
     game_list = json_structure['applist']['apps']
     indexedGamesDict = create_steam_index(game_list)
 
-    with open(get_database_path("steamDatabase.json"), 'w') as outfile:
+    with open(get_database_path("database_steam.json"), 'w') as outfile:
         json.dump(indexedGamesDict, outfile)
 
 
@@ -70,7 +71,7 @@ def get_file_creation_date(path):
     return datetime.fromtimestamp(t).strftime(DATE_FORMAT)
 
 
-def get_database_path(database_name : str):
+def get_database_path(database_name: str):
     return format_path(f'{PREFIX}{database_name}')
 
 
@@ -80,7 +81,8 @@ def create_steam_index(game_list):
 
     for game in game_list:
         if game:
-            first_char = game.get('name')[0] if len(game.get('name')) > 0 else None
+            first_char = game.get('name')[0] if len(
+                game.get('name')) > 0 else None
 
             if not char or char != first_char:
                 char = first_char

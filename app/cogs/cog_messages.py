@@ -1,9 +1,9 @@
 from discord.ext import commands
 
-from app.System.Utils import send_response_with_quote, send_response_with_quote_format, \
+from app.system.utils import send_response_with_quote, send_response_with_quote_format, \
     get_all_args_as_string, get_message_of_context, send_response
 
-from app.Messages.MessagesResponses import function_switcher, wiki_search, genius, choose, \
+from app.messages.messages_responses import function_switcher, wiki_search, genius, choose, \
     steam_chart, search_info_from_steam
 
 
