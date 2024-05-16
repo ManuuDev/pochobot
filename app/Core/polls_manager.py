@@ -24,8 +24,7 @@ async def start_poll(ctx, text):
             list_of_options = strip_strings_from_list(list_of_options)
         else:
             clean_poll()
-            raise PollError(
-                'Error en el formato, deberia ser: pregunta? opción 1, opción 2, opción 3 ...')
+            raise PollError('Error en el formato, deberia ser: pregunta? opción 1, opción 2, opción 3 ...')
 
         ammount_of_options = len(list_of_options)
         if 1 < ammount_of_options <= 9:

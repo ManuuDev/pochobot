@@ -1,6 +1,7 @@
 import json
 import requests
 from datetime import date, datetime
+from app.system.constants import URLS
 from app.system.utils import get_absolute_path as format_path
 import os
 
@@ -52,8 +53,7 @@ def init_steam_database():
 def update_steam_database():
     global indexedGamesDict
 
-    page = requests.get(
-        "http://api.steampowered.com/ISteamApps/GetAppList/v2/")
+    page = requests.get(URLS.STEAM_API)
     json_structure = json.loads(page.content)
     game_list = json_structure['applist']['apps']
     indexedGamesDict = create_steam_index(game_list)

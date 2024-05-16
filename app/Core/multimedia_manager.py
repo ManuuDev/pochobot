@@ -2,20 +2,17 @@ import asyncio
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
-from typing import Final
 import yt_dlp
 from discord import VoiceClient, ClientException
 from app.models.multimedia.multimedia_factory import multimedia_factory
 from app.core import database
+from app.system.constants import URLS
 from app.system.error_handler import CustomUserError, MultimediaError
 from app.system.utils import get_channel_from_context, get_radio_from_value, is_empty, search_for_youtube_video, send_response_with_quote, send_response_with_quote_format
 # TODO Cache
 
 youtubeQueue: list = list()
 lock = Lock()
-
-youtubeRawURl: Final[str] = 'https://www.youtube.com'
-
 
 async def radio(ctx, genre, bot):
     if not genre:
@@ -34,7 +31,7 @@ async def radio(ctx, genre, bot):
 
 
 async def play_from_youtube(ctx, url, bot):
-    if youtubeRawURl not in url:
+    if URLS.YOUTUBE not in url:
         url = search_for_youtube_video(search=url)
 
     try:
@@ -70,7 +67,7 @@ async def play_audio(ctx, bot, url, multimedia=None):
 
 
 async def create_multimedia(ctx, url, bot, multimedia=None):
-    if youtubeRawURl in url:
+    if URLS.YOUTUBE in url:
         return await get_data_from_youtube(ctx, bot, url, multimedia)
     elif get_radio_from_value(url):
         return multimedia_factory(ctx, url=url, typo='radio')
@@ -98,14 +95,12 @@ async def queue_manager(ctx, url, bot):
 
     if multimedia.typo == 'playlist' and multimedia.tracks >= 1:
         create_playlist_to_queue_daemon(ctx, info, bot, full_list=True)
-        response = 'Playlist {0} \ncon {1} tracks agregada a la cola'.format(
-            multimedia.title, multimedia.tracks)
+        response = 'Playlist {0} \ncon {1} tracks agregada a la cola'.format(multimedia.title, multimedia.tracks)
 
     elif multimedia.typo == 'playlist':
         first_song_url = get_first_song_url(info)
         first_song_info = get_multimedia_metadata(first_song_url)
-        multimedia = multimedia_factory(
-            ctx, url=first_song_url, info=first_song_info)
+        multimedia = multimedia_factory(ctx, url=first_song_url, info=first_song_info)
         add_multimedia_to_queue(multimedia)
         response = 'Track agregado a la cola: {0}'.format(multimedia.title)
 
@@ -121,8 +116,7 @@ def create_playlist_to_queue_daemon(ctx, info, bot, full_list=False):
     queue = info.get('entries')
     if queue and len(queue) > 1:
         index = 0 if full_list else 1
-        threading.Thread(target=add_playlist_to_queue, args=(
-            ctx, queue[index:], bot), daemon=True).start()
+        threading.Thread(target=add_playlist_to_queue, args=(ctx, queue[index:], bot), daemon=True).start()
 
 
 def add_playlist_to_queue(ctx, queue, bot):
@@ -163,11 +157,9 @@ def play_next_multimedia(ctx, bot):
     global youtubeQueue
     if not is_empty(youtubeQueue):
         multimedia = youtubeQueue.pop(0)
-        asyncio.run_coroutine_threadsafe(play_audio(
-            multimedia.ctx, bot, multimedia.url, multimedia), bot.loop)
+        asyncio.run_coroutine_threadsafe(play_audio(multimedia.ctx, bot, multimedia.url, multimedia), bot.loop)
     else:
-        asyncio.run_coroutine_threadsafe(send_response_with_quote_format(
-            ctx, 'La cola de musica esta vacia'), bot.loop)
+        asyncio.run_coroutine_threadsafe(send_response_with_quote_format(ctx, 'La cola de musica esta vacia'), bot.loop)
 
 
 async def pause(ctx, bot):

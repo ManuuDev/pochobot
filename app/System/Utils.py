@@ -5,19 +5,18 @@ from difflib import SequenceMatcher
 from threading import Timer
 from youtube_search import YoutubeSearch
 from app.core import database
+from app.system.constants import MAIN_FOLDER_NAME, URLS
 from app.system.error_handler import error_handler
 
-MAIN_FOLDER_NAME: str = 'pochobot'
 
 #                               Commands                                  #
-
 
 def get_all_args_as_string(args):
     return ' '.join(args).strip()
 
 
 def get_timer(bot, ctx, function, seconds=5.0):
-    return Timer(interval=seconds, function= lambda: asyncio.run_coroutine_threadsafe(function(ctx, True), bot.loop))
+    return Timer(interval=seconds, function=lambda: asyncio.run_coroutine_threadsafe(function(ctx, True), bot.loop))
 
 
 #                               Commands                                  #
@@ -97,7 +96,7 @@ def search_for_youtube_video(message=None, search=None):
         result = results[0]
         suffix = result.get('url_suffix')
 
-        return 'https://www.youtube.com' + suffix
+        return URLS.YOUTUBE + suffix
     else:
         raise error_handler.EmptyResponse('No encontre ningun video')
 

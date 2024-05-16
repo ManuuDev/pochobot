@@ -23,8 +23,7 @@ class Poll:
         for counter, option in enumerate(list_of_options, start=1):
             string_of_options += '\n\t{}) {}'.format(counter, option)
 
-        self.response_content = 'Votacion iniciada: \nPregunta: {0}?\nOpciones: {1}'.format(
-            question, string_of_options)
+        self.response_content = 'Votacion iniciada: \nPregunta: {0}?\nOpciones: {1}'.format(question, string_of_options)
 
     def start_timer(self):
         self.timer.start()

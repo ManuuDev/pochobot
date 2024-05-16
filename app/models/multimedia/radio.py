@@ -14,6 +14,5 @@ class Radio(Multimedia):
             self.fill_fields()
 
     def fill_fields(self, info=None):
-        self.audioSource = FFmpegOpusAudio(self.url,
-                                           before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
+        self.audioSource = FFmpegOpusAudio(self.url, before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
         self.processed = True
