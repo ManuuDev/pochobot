@@ -31,7 +31,7 @@ async def radio(ctx, genre, bot):
 
 
 async def play_from_youtube(ctx, url, bot):
-    if URLS.YOUTUBE not in url:
+    if URLS.YOUTUBE.value not in url:
         url = search_for_youtube_video(search=url)
 
     try:
@@ -67,7 +67,7 @@ async def play_audio(ctx, bot, url, multimedia=None):
 
 
 async def create_multimedia(ctx, url, bot, multimedia=None):
-    if URLS.YOUTUBE in url:
+    if URLS.YOUTUBE.value in url:
         return await get_data_from_youtube(ctx, bot, url, multimedia)
     elif get_radio_from_value(url):
         return multimedia_factory(ctx, url=url, typo='radio')

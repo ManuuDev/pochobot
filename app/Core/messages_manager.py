@@ -64,7 +64,7 @@ def simple_talk(text):
 
 async def steam_chart(game_name):
     game = steam_search(game_name)
-    url_raw = URLS.STEAM_CHARTS
+    url_raw = URLS.STEAM_CHARTS.value
     id = game[1]
     url = f'{url_raw}/app/{id}'
     try:
@@ -103,7 +103,7 @@ def steam_search(game_name):
 
 async def search_info_from_steam(game_name):
     appid = steam_search(game_name)[1]
-    steam_url = URLS.STEAM_STORE + str(appid)
+    steam_url = URLS.STEAM_STORE.value + str(appid)
 
     async with aiohttp.ClientSession(headers=HEADERS, cookies=STEAM_COOKIES) as session:
         response = await fetch(session, steam_url)

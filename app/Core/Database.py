@@ -53,7 +53,7 @@ def init_steam_database():
 def update_steam_database():
     global indexedGamesDict
 
-    page = requests.get(URLS.STEAM_API)
+    page = requests.get(URLS.STEAM_API.value)
     json_structure = json.loads(page.content)
     game_list = json_structure['applist']['apps']
     indexedGamesDict = create_steam_index(game_list)

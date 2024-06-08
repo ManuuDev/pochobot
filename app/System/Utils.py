@@ -96,7 +96,7 @@ def search_for_youtube_video(message=None, search=None):
         result = results[0]
         suffix = result.get('url_suffix')
 
-        return URLS.YOUTUBE + suffix
+        return URLS.YOUTUBE.value + suffix
     else:
         raise error_handler.EmptyResponse('No encontre ningun video')
 
