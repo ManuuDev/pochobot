@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+from app.core.finance_manager import get_dollar_quote
+from app.system.log import log
 from app.system.utils import send_response_with_quote, send_response_with_quote_format, \
     get_all_args_as_string, get_message_of_context, send_response
 
@@ -56,6 +58,19 @@ class MessagesCog(commands.Cog):
             result = '¿Vos queres que te meta un ban?'
         await send_response_with_quote(ctx, result)
 
+    @commands.command(name='dolar', help='El pocho saca su ábaco y te tira las cotizaciones del dolar')
+    async def dollar_quotes(self, ctx):
+        try:
+            result = await get_dollar_quote()
+            
+            if result:
+                await send_response_with_quote_format(ctx, result)
+            else:
+                raise Exception('Error al deserializar cotizaciones')
+            
+        except Exception as exception:
+            log(f'Error al obtener cotizaciones: {exception}')
+            await send_response_with_quote(ctx, 'Banca que hay quilombo en WallStreet pibe, ahora no puedo.')
 
 def setup(bot):
     bot.add_cog(MessagesCog(bot))

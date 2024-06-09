@@ -1,23 +1,49 @@
+import datetime
+import pytz
 from discord.ext import commands, tasks
 from app.core.database import update_steam_database
+from app.core.finance_manager import get_dollar_quote
 from app.system.log import log
+from app.system.utils import send_response, send_response_with_quote_format
 
 
 class TasksCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.check_empty_voice_channel_task.start()
+        self.update_steam_database_task.start()
+        self.dollar_quote_task_opening.start()
+        self.dollar_quote_task_close.start()
+
 
     @tasks.loop(minutes=1.0)
-    async def check_empty_voice_channel_task(bot):
-        if len(bot.voice_clients) > 0 and len(bot.voice_clients[0].channel.members) == 1:
-            await bot.voice_clients[0].disconnect()
+    async def check_empty_voice_channel_task(self):
+        if len(self.bot.voice_clients) > 0 and len(self.bot.voice_clients[0].channel.members) == 1:
+            await self.bot.voice_clients[0].disconnect()
             log("Desconectado del canal de voz por inactividad")
 
     @tasks.loop(hours=12.0)
-    async def update_steam_database_task(bot):
+    async def update_steam_database_task(self):
+        log("Actualizando base de datos de steam")
         update_steam_database()
         log("Base de datos de steam actualizada")
+
+    @tasks.loop(time=datetime.time(hour=11,tzinfo=pytz.timezone('America/Argentina/Buenos_Aires')))
+    async def dollar_quote_task_opening(self):
+        message = await get_dollar_quote()
+        ctx = await self.bot.fetch_channel('995207211297013791')
+        if message:
+            await send_response(ctx, 'Cotizaciones de apertura')
+            await send_response_with_quote_format(ctx, message)
+
+    @tasks.loop(time=datetime.time(hour=18,tzinfo=pytz.timezone('America/Argentina/Buenos_Aires')))
+    async def dollar_quote_task_close(self):
+        message = await get_dollar_quote()
+        ctx = await self.bot.fetch_channel('995207211297013791')
+        if message:
+            await send_response(ctx, 'Cotizaciones de cierre')
+            await send_response_with_quote_format(ctx, message)
 
 
 def setup(bot):

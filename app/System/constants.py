@@ -6,6 +6,7 @@ class URLS(Enum):
     STEAM_STORE = 'https://store.steampowered.com/app/'
     STEAM_CHARTS = 'https://steamcharts.com'
     STEAM_API = 'http://api.steampowered.com/ISteamApps/GetAppList/v2/'
+    CRIPTOYA_API = 'https://criptoya.com/api/'
 
 class ELEMENT(Enum):
     DIV = 'div'
