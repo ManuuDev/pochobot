@@ -4,7 +4,7 @@ import re
 from difflib import SequenceMatcher
 from threading import Timer
 from youtube_search import YoutubeSearch
-from app.core import database
+from app.core import databases
 from app.system.constants import MAIN_FOLDER_NAME, URLS
 from app.system.error_handler import error_handler
 
@@ -43,7 +43,7 @@ async def send_poll_message(ctx, poll):
     message = await send_response_with_quote_format(ctx, poll.response_content)
 
     for index in range(poll.ammount_of_options):
-        await message.add_reaction(database.numbers[index])
+        await message.add_reaction(databases.numbers[index])
 
     return message
 
@@ -65,7 +65,7 @@ def get_channel_from_context(ctx):
 
 #                               Multimedia                                #
 def get_radio_from_value(url):
-    for key, value in database.radios.items():
+    for key, value in databases.radios.items():
         if value == url:
             return key
 

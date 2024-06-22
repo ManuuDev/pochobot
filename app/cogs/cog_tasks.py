@@ -1,6 +1,6 @@
 import datetime
 from discord.ext import commands, tasks
-from app.core.database import update_steam_database
+from app.core.databases import update_steam_database
 from app.core.finance_manager import get_dollar_quote
 from app.system.log import log
 from app.system.utils import send_response, send_response_with_quote_format

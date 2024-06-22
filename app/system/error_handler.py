@@ -1,5 +1,5 @@
 import re
-from app.core import database
+from app.core import databases
 from discord.ext import commands
 from app.system.log import log
 import logging as logging
@@ -67,7 +67,7 @@ async def error_handler(ctx, exception):
     except commands.CommandNotFound as exception:
         command_try = re.search('\"(.*)\"', exception.args[0]).group(1)
         if command_try.count('.') == 0:
-            match = max(database.commandsNames, key=lambda c: Utils.similairty_ratio(c.lower(), command_try.lower()))
+            match = max(databases.commandsNames, key=lambda c: Utils.similairty_ratio(c.lower(), command_try.lower()))
             await Utils.send_response_with_quote(ctx, 'Ese comando no existe troesma, el mas parecido es {}'.format(match))
     except commands.CheckFailure:
         pass

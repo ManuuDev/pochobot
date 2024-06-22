@@ -5,7 +5,7 @@ from threading import Lock
 import yt_dlp
 from discord import VoiceClient, ClientException
 from app.models.multimedia.multimedia_factory import multimedia_factory
-from app.core import database
+from app.core import databases
 from app.system.constants import URLS
 from app.system.error_handler import CustomUserError, MultimediaError
 from app.system.utils import get_channel_from_context, get_radio_from_value, is_empty, search_for_youtube_video, send_response_with_quote, send_response_with_quote_format
@@ -18,7 +18,7 @@ async def radio(ctx, genre, bot):
     if not genre:
         raise CustomUserError('Tenes que decirme una radio maquinola')
 
-    url = database.radios.get(genre)
+    url = databases.radios.get(genre)
     try:
         if url:
             await play_audio(ctx, bot, url)

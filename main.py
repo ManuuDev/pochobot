@@ -6,7 +6,7 @@ import sys
 import discord
 from discord.ext import commands
 import configparser
-from app.core import database
+from app.core import databases
 from app.system.utils import get_absolute_path
 from app.system.error_handler import ErrorChekingOutdatedPackages, NoTokenProvided, OutdatedPackages
 from app.system.log import create_main_log, log
@@ -28,7 +28,7 @@ def main():
 
     load_cogs()
 
-    database.init_globals(bot.commands)
+    databases.init_globals(bot.commands)
 
     config = load_config()
     profile = config['MAIN']['PROFILE']
