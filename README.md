@@ -1,7 +1,7 @@
 # pochobot
 Pochobot for discord
 
-Config file template at localconfig\config.cfg
+Config file template at config\config.cfg
 
 [MAIN]
 
